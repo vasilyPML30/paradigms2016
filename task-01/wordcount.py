@@ -5,29 +5,29 @@ def read_words(filename):
     words = []
     with open(filename, "r") as f:
         for line in f:
-            words.extend(line.split())
+            words.extend(line.lower().split())
     return words
 
 
-def Count(words):
+def count(words):
     res = dict.fromkeys(words, 0)
-    for i in words:
-        res[i] += 1
+    for word in words:
+        res[word] += 1
     return res
 
 
 def print_words(fname):
-    ans = Count(read_words(fname))
+    ans = count(read_words(fname))
     ans = sorted(ans.items())
-    for i in ans:
-        print(i[0], i[1])
+    for word, cnt in ans:
+        print(word, cnt)
 
 
 def print_top(fname):
-    ans = Count(read_words(fname))
+    ans = count(read_words(fname))
     ans = sorted(ans.items(), key = lambda x: x[1], reverse = True)
-    for i in ans[:20]:
-        print(i[0], i[1])
+    for word, cnt in ans[:20]:
+        print(word)
 
 
 def main():
