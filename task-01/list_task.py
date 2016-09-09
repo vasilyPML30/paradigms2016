@@ -2,6 +2,8 @@ def remove_adjacent(lst):
     n = len(lst)
     i = 1
     res = list()
+    if n == 0:
+        return lst
     res.append(lst[0])
     while i < n:
         if lst[i - 1] != lst[i]:
