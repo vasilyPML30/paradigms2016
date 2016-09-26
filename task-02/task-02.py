@@ -7,14 +7,12 @@ from collections import defaultdict
 
 def walk_through(rootdir):
 	equal_files = defaultdict(list)
-	omit = len(rootdir) + 1
-	for subdir, dirs, files in os.walk(rootdir):
-		dirs[:] = [d for d in dirs if not os.path.islink(d)]
+	for subdir, _, files in os.walk(rootdir):
 		for file in files:
 			if not file[0] == '.' and not file[0] == '~' and not os.path.islink(file):
 				file = os.path.join(subdir, file)
 				hash = get_hash(file)
-				equal_files[hash].append(file[omit:])
+				equal_files[hash].append(os.path.relpath(file))
 	return equal_files
 
 
@@ -24,7 +22,7 @@ def get_hash(file):
 		while True:
 			part = f.read(50000)
 			sha1.update(part)
-			if not len(part):
+			if not part:
 				break
 	return sha1.hexdigest()
 
