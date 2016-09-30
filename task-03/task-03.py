@@ -7,7 +7,7 @@ def read(real_size, size):
     matr = numpy.zeros(shape=(size << 1, size), dtype=int)
     inpt = numpy.loadtxt(sys.stdin, ndmin=2)
     matr[:real_size, :real_size] = inpt[:real_size]
-    matr[size:size + real_size, :real_size] = inpt[:real_size]
+    matr[size:size + real_size, :real_size] = inpt[real_size:]
     return matr
 
 
@@ -16,13 +16,12 @@ def write(matr, size):
         print(*row)
 
 
-def mult(M1, M2):
-    m1 = M1.copy()
-    m2 = M2.copy()
+def mult(m1, m2):
+    #m1 = M1.copy()
+    #m2 = M2.copy()
     size = m1.shape[0]
     if size == 1:
-        m1[0][0] *= m2[0][0]
-        return m1
+        return m1 * m2
     size >>= 1
     A00 = m1[:size, :size]
     A01 = m1[:size, size:]
@@ -62,7 +61,6 @@ def main():
     size = 1 << math.ceil(math.log2(real_size))
     matr = read(real_size, size)
     write(mult(matr[:size], matr[size:]), real_size)
-
-
+    
 if __name__ == "__main__":
     main()
