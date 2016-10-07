@@ -5,27 +5,16 @@ class Scope:
         self.parent = parent
 
     def __setitem__(self, key, value):
-        if key in self.content:
-            self.content[key] = value
-        else:
-            cur = self
-            while cur.parent:
-                cur = cur.parent
-                if key in cur.content:
-                    cur.content[key] = value
-                    return
-            self.content[key] = value
+        self.content[key] = value
+
 
     def __getitem__(self, key):
         if key in self.content:
             return self.content[key]
+        elif self.parent:
+            return self.parent[key]
         else:
-            cur = self
-            while cur.parent:
-                cur = cur.parent
-                if key in cur.content:
-                    return cur.content[key]
-        raise KeyError
+            raise KeyError
 
 
 class Number:
@@ -70,14 +59,10 @@ class Conditional:
 
     def evaluate(self, scope):
         cur = Number(0)
-        if self.condition.evaluate(scope).value:
-            for expr in self.if_true:
-                cur = expr.evaluate(scope)
-            return cur
-        else:
-            for expr in self.if_false:
-                cur = expr.evaluate(scope)
-            return cur
+        branch = self.if_true if self.condition.evaluate(scope).value else self.if_false
+        for expr in branch:
+            cur = expr.evaluate(scope)
+        return cur
 
 
 class Print:
@@ -110,8 +95,8 @@ class FunctionCall:
     def evaluate(self, scope):
         call_scope = Scope(scope)
         func = self.fun_expr.evaluate(scope)
-        for i in range(len(self.args)):
-            call_scope[func.args[i]] = self.args[i].evaluate(scope)
+        for name, arg in zip(func.args, self.args):
+            call_scope[name] = arg.evaluate(scope)
         return func.evaluate(call_scope)
 
 
