@@ -1,6 +1,5 @@
 from yat import model
 
-
 class PrettyPrinter:
 
     def __init__(self):

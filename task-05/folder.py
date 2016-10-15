@@ -1,5 +1,4 @@
 from yat import model
-import printer
 
 class ConstantFolder:
 
