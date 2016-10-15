@@ -1,28 +1,7 @@
 from yat import model
-
+import printer
 
 class ConstantFolder:
-
-    def __init__(self):
-        self.UnaryFuncs = {
-            "-": lambda x: -x.value,
-            "!": lambda x: not x.value
-        }
-        self.BinaryFuncs = {
-            "+": lambda x, y: x.value + y.value,
-            "-": lambda x, y: x.value - y.value,
-            "*": lambda x, y: x.value * y.value,
-            "/": lambda x, y: x.value // y.value,
-            "%": lambda x, y: x.value % y.value,
-            "==": lambda x, y: x.value == y.value,
-            "!=": lambda x, y: x.value != y.value,
-            "<": lambda x, y: x.value < y.value,
-            ">": lambda x, y: x.value > y.value,
-            "<=": lambda x, y: x.value <= y.value,
-            ">=": lambda x, y: x.value >= y.value,
-            "&&": lambda x, y: x.value and y.value,
-            "||": lambda x, y: x.value or y.value,
-        }
 
     def visit(self, tree):
         return tree.visit(self)
@@ -31,14 +10,14 @@ class ConstantFolder:
         return node
 
     def visitFunctionDefinition(self, node):
-        node.function.body = list(self.visit(statement)
-                                  for statement in node.function.body)
+        node.function.body = [self.visit(statement)
+                                  for statement in node.function.body]
         return node
 
     def visitConditional(self, node):
         node.condition = self.visit(node.condition)
-        node.if_true = list(self.visit(line) for line in node.if_true)
-        node.if_false = list(self.visit(line) for line in node.if_false)
+        node.if_true = [self.visit(line) for line in node.if_true]
+        node.if_false = [self.visit(line) for line in node.if_false]
         return node
 
     def visitPrint(self, node):
@@ -53,26 +32,26 @@ class ConstantFolder:
 
     def visitFunctionCall(self, node):
         node.fun_expr = self.visit(node.fun_expr)
-        node.args = list(self.visit(arg) for arg in node.args)
+        node.args = [self.visit(arg) for arg in node.args]
         return node
 
     def visitBinaryOperation(self, node):
         node.lhs = self.visit(node.lhs)
         node.rhs = self.visit(node.rhs)
-        if node.op == "*" and type(node.lhs) == type(model.Number(0)) and not node.lhs.value:
+        if node.op == "*" and isinstance(node.lhs, model.Number) and not node.lhs.value:
             return model.Number(0)
-        if node.op == "*" and type(node.rhs) == type(model.Number(0)) and not node.rhs.value:
+        if node.op == "*" and isinstance(node.rhs, model.Number) and not node.rhs.value:
             return model.Number(0)
-        if type(node.lhs) == type(model.Number(0)) and type(node.rhs) == type(model.Number(0)):
-            return model.Number(self.BinaryFuncs[node.op](node.lhs, node.rhs))
-        if type(node.lhs) == type(model.Reference("")) and type(node.rhs) == type(model.Reference("")) and node.lhs.name == node.rhs.name and node.op == "-":
+        if isinstance(node.lhs, model.Number) and isinstance(node.rhs, model.Number):
+            return node.evaluate(None)
+        if isinstance(node.lhs, model.Reference) and isinstance(node.rhs, model.Reference) and node.lhs.name == node.rhs.name and node.op == "-":
             return model.Number(0)
         return node
 
     def visitUnaryOperation(self, node):
         node.expr = self.visit(node.expr)
-        if type(node.expr) == type(model.Number(0)):
-            return model.Number(self.UnaryFuncs[node.op](node.expr))
+        if isinstance(node.expr, model.Number):
+            return node.evaluate(None)
         return node
 
 
@@ -108,7 +87,9 @@ def test():
             model.UnaryOperation("-", model.Number(30))
         ),
     )
+    prr.visit(oper)
     noper = folder.visit(oper)
-
+    prr.visit(noper)
+    
 if __name__ == "__main__":
     test()

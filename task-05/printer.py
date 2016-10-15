@@ -5,6 +5,7 @@ class PrettyPrinter:
 
     def __init__(self):
         self.padding = 0
+        self.padSize = 4
 
     def visit(self, tree):
         tree.visit(self)
@@ -19,10 +20,10 @@ class PrettyPrinter:
         print("def " + node.name + "(", end="")
         print(", ".join(arg for arg in node.function.args), end="")
         print(") {")
-        self.padding += 4
+        self.padding += self.padSize
         for statement in node.function.body:
             self.visit(statement)
-        self.padding -= 4
+        self.padding -= self.padSize
         print(" " * self.padding + "}", end="")
 
     def visitConditional(self, node):
@@ -33,17 +34,17 @@ class PrettyPrinter:
         node.condition.visit(self)
         self.padding = tmpPadding
         print(") {")
-        self.padding += 4
+        self.padding += self.padSize
         for line in node.if_true:
             self.visit(line)
-        self.padding -= 4
+        self.padding -= self.padSize
         print(" " * self.padding + "}", end="")
-        if node.if_false:
+        if node.if_false != None:
             print(" else {")
-            self.padding += 4
+            self.padding += self.padSize
             for line in node.if_false:
                 self.visit(line)
-            self.padding -= 4
+            self.padding -= self.padSize
             print(" " * self.padding + "}", end="")
 
     def visitPrint(self, node):
@@ -70,9 +71,9 @@ class PrettyPrinter:
         print("(", end="")
         if node.args:
             node.args[0].visit(self)
-            for i in range(1, len(node.args)):
+            for arg in node.args[1:]:
                 print(", ", end="")
-                node.args[i].visit(self)
+                arg.visit(self)
         print(")", end="")
         self.padding = tmpPadding
 
@@ -129,7 +130,9 @@ def mytest():
         )
     )
     printer.visit(asd2)
-    printer.visit(model.FunctionCall(model.Reference("func"), [asd, asd]))
-
+    printer.visit(model.FunctionCall(model.Reference("func"), [asd, asd2]))
+    cond4 = model.Conditional(model.Number(228), [])
+    printer.visit(cond4)
+    
 if __name__ == "__main__":
     mytest()
