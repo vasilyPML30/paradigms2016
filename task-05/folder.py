@@ -1,4 +1,5 @@
 from yat import model
+import printer
 
 class ConstantFolder:
 
@@ -16,7 +17,8 @@ class ConstantFolder:
     def visitConditional(self, node):
         node.condition = self.visit(node.condition)
         node.if_true = [self.visit(line) for line in node.if_true]
-        node.if_false = [self.visit(line) for line in node.if_false]
+        if node.if_false != None:
+            node.if_false = [self.visit(line) for line in node.if_false]
         return node
 
     def visitPrint(self, node):
@@ -86,9 +88,13 @@ def test():
             model.UnaryOperation("-", model.Number(30))
         ),
     )
+    opr = model.Conditional(model.UnaryOperation("!", model.Number(2)), [model.Print(model.Number(2))])
     prr.visit(oper)
+    prr.visit(opr)
     noper = folder.visit(oper)
+    nopr = folder.visit(opr)
     prr.visit(noper)
+    prr.visit(nopr)
     
 if __name__ == "__main__":
     test()
