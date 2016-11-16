@@ -8,7 +8,7 @@ tail' [] = []
 take' :: Int -> [a] -> [a]
 take' n [] = []
 take' 0 l = []
-take' n (x : xs) = [x] ++ take' (n - 1) xs
+take' n (x : xs) = x : take' (n - 1) xs
 
 drop' :: Int -> [a] -> [a]
 drop' n [] = []
@@ -30,4 +30,4 @@ concat' (x : xs) b = x : (concat' xs b)
 
 quickSort' :: Ord a => [a] -> [a]
 quickSort' [] = []
-quickSort' (x : xs) = concat' (concat' (quickSort' (filter' (< x) xs)) (filter' (== x) (concat' [x] xs))) (quickSort' (filter' (> x) xs))
+quickSort' (x : xs) = concat' (concat' (quickSort' (filter' (< x) xs)) (filter' (== x) (x : xs))) (quickSort' (filter' (> x) xs))
