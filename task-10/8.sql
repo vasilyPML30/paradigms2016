@@ -3,5 +3,5 @@ where Capital.CountryCode = Country.Code
 and Cap.Id = Capital.CityId
 and Ct.CountryCode = Country.Code
 group by Country.Name
-having max(Ct.Population) = Cap.Population
+having max(Ct.Population) > Cap.Population
 order by Country.Population / Country.SurfaceArea desc, Country.Name
