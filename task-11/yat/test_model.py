@@ -134,7 +134,7 @@ class TestBinaryOperation(TestCase):
                             if oper in ("+", "-", "*", "/", "%"):
                                 self.assertEqual(
                                     int(output.getvalue()), int(func(a, b)))
-                            else: 
+                            else:
                                 self.assertEqual(
                                     bool(int(output.getvalue())), bool(func(a, b)))
 
