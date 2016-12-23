@@ -131,9 +131,12 @@ class TestBinaryOperation(TestCase):
                                 operation, model.BinaryOperation)
                             model.Print(operation.evaluate(
                                 scope)).evaluate(scope)
-                            self.assertEqual(
-                                int(output.getvalue()), int(func(a, b)))
-
+                            if oper in ("+", "-", "*", "/", "%"):
+                                self.assertEqual(
+                                    int(output.getvalue()), int(func(a, b)))
+                            else: 
+                                self.assertEqual(
+                                    bool(int(output.getvalue())), bool(func(a, b)))
 
 class TestUnaryOperation(TestCase):
 
@@ -149,7 +152,7 @@ class TestUnaryOperation(TestCase):
                 operation = model.UnaryOperation("!", model.Number(a))
                 self.assertIsInstance(operation, model.UnaryOperation)
                 model.Print(operation.evaluate(scope)).evaluate(scope)
-                self.assertEqual(int(output.getvalue()), int(not a))
+                self.assertEqual(bool(int(output.getvalue())), bool(not a))
 
 
 class TestFunctionDefinition(TestCase):
